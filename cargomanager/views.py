@@ -20,7 +20,6 @@ import time
 
 
 
-
 # Create your views here.
 def home(request):
     return HttpResponse(render(request, "index.html"))
