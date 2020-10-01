@@ -18,8 +18,6 @@ from loger import setting, makelog
 import traceback
 import time
 
-
-
 # Create your views here.
 def home(request):
     return HttpResponse(render(request, "index.html"))
