@@ -41,6 +41,7 @@ def api(request):
                     staff = Staff.objects.get(username=postdata['username'])
                     if staff.password == postdata['password']:
                         returndata['suc'] = True
+                        returndata['role']=staff.role
                     else:
                         returndata['suc'] = False
                         returndata['reason'] = 'PwDoesntMatch'
