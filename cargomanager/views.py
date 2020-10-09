@@ -47,10 +47,12 @@ def api(request):
                 except:
                     returndata['suc'] = False
                     returndata['reason'] = 'StaffDoesntExist'
+ 
             elif reason == 'getOrders':
 
-                returndata['orders'] = [order.getJson()
+                returndata['orders'] =  [order.getJson()
                                         for order in Order.objects.all()]
+                returndata['orders'].reverse() 
                 returndata['suc'] = True
 
             elif reason == 'addOrder':
