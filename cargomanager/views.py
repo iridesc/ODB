@@ -19,6 +19,8 @@ import traceback
 import time
 
 # Create your views here.
+
+
 def home(request):
     return HttpResponse(render(request, "index.html"))
 
@@ -39,7 +41,7 @@ def api(request):
                     staff = Staff.objects.get(username=postdata['username'])
                     if staff.password == postdata['password']:
                         returndata['suc'] = True
-                        returndata['role']=staff.role
+                        returndata['role'] = staff.role
                     else:
                         returndata['suc'] = False
                         returndata['reason'] = 'PwDoesntMatch'
@@ -47,32 +49,42 @@ def api(request):
                 except:
                     returndata['suc'] = False
                     returndata['reason'] = 'StaffDoesntExist'
- 
-            elif reason == 'getOrders':
 
-                returndata['orders'] =  [order.getJson()
-                                        for order in Order.objects.all()]
-                returndata['orders'].reverse() 
-                returndata['suc'] = True
+            elif reason == 'getOrders':
+                try:
+                    staff = Staff.objects.get(username=postdata['username'])
+                    if staff.role == 'boss' or staff.role == 'store':
+                        orders = Order.objects.all()
+                    elif staff.role == 'saler':
+                        orders = staff.order_set.all()
+                    returndata['orders'] = [
+                        order.getJson()
+                        for order in orders
+                    ]
+                    returndata['orders'].reverse()
+                    returndata['suc'] = True
+                except Exception as e:
+                    returndata['suc'] = False
+                    returndata['reason'] = 'User'
 
             elif reason == 'addOrder':
                 try:
                     Order(
                         addtime=time.time(),
-                        saler=Staff.objects.get(username= postdata['saler']),
+                        saler=Staff.objects.get(username=postdata['saler']),
                         info=postdata['info'],
                         product=postdata['product']
                     ).save()
                     returndata['suc'] = True
                 except Exception as e:
-                    returndata['reason']=str(e)
+                    returndata['reason'] = str(e)
             elif reason == 'updateOrder':
-    
+
                 # try:
-                order=  Order.objects.get(id=postdata['orderId'])
-                order.expnum=postdata['expnum']
-                order.product=postdata['product']
-                order.info=postdata['info']
+                order = Order.objects.get(id=postdata['orderId'])
+                order.expnum = postdata['expnum']
+                order.product = postdata['product']
+                order.info = postdata['info']
                 order.save()
                 returndata['suc'] = True
                 # except Exception as e:
